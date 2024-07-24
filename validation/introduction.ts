@@ -10,7 +10,7 @@ export const SentenceDto = z.object({
     });
 
 export const IntroductionDto = z.object({
-    content: z.string(),
+    sha:z.string(),
     userId:z.string(),
     sentences: z.array(SentenceDto)
 })

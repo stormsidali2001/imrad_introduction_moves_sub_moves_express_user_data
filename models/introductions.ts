@@ -22,7 +22,7 @@ const SentenceSchema = new mongoose.Schema({
 });
 
 export const IntroductionSchema = new mongoose.Schema({
-    content: {
+    sha: {
         type: String,
         required: true
     },
