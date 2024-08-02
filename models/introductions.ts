@@ -36,6 +36,14 @@ export const IntroductionSchema = new mongoose.Schema({
         type: [SentenceSchema],
         required: true
     },
+    averageSubMoveConfidence:{
+        type:Number,
+        required:true
+    },
+    averageMoveConfidence:{
+        type:Number,
+        required:true
+    }
 
 });
 

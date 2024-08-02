@@ -1,12 +1,24 @@
 import express,{Response,Request} from 'express';
 import { IntroductionDto } from '../../validation/introduction';
-import { createIntroduction, getIntroductionsStats } from '../../services/introductionService';
+import { createIntroduction, findIntroductions, getIntroductionsStats } from '../../services/introductionService';
+import { RetrieverParamsDto } from '../../validation/RetrieverParamsDto';
 
 const introductionRouter = express.Router();
 
-introductionRouter.get("/",(req:Request,res:Response)=>{
+introductionRouter.get("/users/:userId",async (req:Request,res:Response)=>{
+    try{
+        console.log(req.params,req.query)
+        
+    const {page,search,userId} = await RetrieverParamsDto.parseAsync({...req.params,...req.query});
 
-    res.send("introductions")
+    const introductions = await findIntroductions(userId,page,search);
+    res.status(200).json(introductions)
+
+    }catch(err){
+        console.error(JSON.stringify(err))
+        res.status(422).json(err)
+    }
+
 });
 
 introductionRouter.post("/",async (req:Request,res:Response)=>{
