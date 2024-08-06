@@ -1,0 +1,120 @@
+import { PAGE_SIZE } from "../globals";
+import introductionModel from "../models/introductions";
+import {
+  CreateSentenceFeedbackDto,
+  FeedbackDto,
+  SentenceFeedbackDto,
+} from "../validation/feedbackDto";
+
+import { IntroductionDto } from "../validation/introduction";
+import { RetrieverParamsDto } from "../validation/RetrieverParamsDto";
+import { getPaginatedResults } from "../validation/paginatedDtoMaker";
+
+export const createSentenceFeedback = async ({
+  feedback,
+  sentenceId,
+  introductionId,
+}: CreateSentenceFeedbackDto) => {
+  const introduction = await introductionModel.findById(introductionId);
+  if (!introduction) {
+    throw new Error("Introduction not found");
+  }
+  const sentence = introduction.sentences.find(
+    (s) => s.id.toString() === sentenceId,
+  );
+  if (!sentence) {
+    throw new Error("Sentence not found");
+  }
+  sentence.feedback = {
+    correctMove: feedback.correctMove,
+    liked: feedback.liked,
+    reason: feedback.reason,
+    correctSubMove: feedback.correctSubMove,
+    username: feedback.username,
+    image: feedback.image,
+  };
+  await introduction.save();
+};
+export async function getPaginatedFeedbacks(
+  userId?: string,
+  page: number = 1,
+  search?: string,
+) {
+  try {
+    // First, get the total count of feedbacks that match the criteria
+    const total = await getFeedbackCount(userId, search);
+
+    // Get the paginated results
+    const result = await introductionModel
+      .aggregate([
+        { $unwind: "$sentences" },
+        { $unwind: "$sentences.feedback" },
+        {
+          $match: {
+            ...(userId && { userId }),
+            ...(search && {
+              "sentences.text": { $regex: search, $options: "i" },
+            }),
+          },
+        },
+        { $sort: { "sentences.feedback._id": -1 } },
+        { $skip: (page - 1) * PAGE_SIZE },
+        { $limit: PAGE_SIZE },
+        {
+          $project: {
+            _id: 0,
+            feedback: "$sentences.feedback",
+            sentenceText: "$sentences.text",
+            sentenceId: "$sentences._id",
+            move: "$sentences.move",
+            subMove: "$sentences.subMove",
+          },
+        },
+      ])
+      .exec();
+
+    const feedbacksData = result.map((r) => ({
+      ...r,
+      sentenceId: r.sentenceId.toString(),
+    }));
+
+    return getPaginatedResults(
+      {
+        data: feedbacksData,
+        page,
+        per_page: PAGE_SIZE,
+        total,
+        total_pages: Math.ceil(total / PAGE_SIZE),
+      },
+      SentenceFeedbackDto,
+    );
+  } catch (error) {
+    console.error("Error retrieving paginated feedbacks:", error);
+    throw error;
+  }
+}
+
+export async function getFeedbackCount(userId?: string, search?: string) {
+  const totalResult = await introductionModel
+    .aggregate([
+      { $unwind: "$sentences" },
+      { $unwind: "$sentences.feedback" },
+      {
+        $match: {
+          ...(userId && { userId }),
+          ...(search && {
+            "sentences.text": { $regex: search, $options: "i" },
+          }),
+        },
+      },
+      {
+        $count: "feedbackCount",
+      },
+    ])
+    .exec();
+
+  const total =
+    totalResult.length > 0 ? (totalResult[0].feedbackCount as number) : 0;
+
+  return total;
+}
