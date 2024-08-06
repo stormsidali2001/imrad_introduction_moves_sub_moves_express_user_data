@@ -118,3 +118,26 @@ export async function getFeedbackCount(userId?: string, search?: string) {
 
   return total;
 }
+
+export const deleteFeedback = async (
+  introductionId: string,
+  sentenceId: string,
+) => {
+  try {
+    const result = await introductionModel.updateOne(
+      { _id: introductionId, "sentences._id": sentenceId },
+      {
+        $unset: { "sentences.$.feedback": "" },
+      },
+    );
+
+    //@ts-ignore
+    if (result?.nModified === 0) {
+      console.log("No matching document found or feedback already absent.");
+    } else {
+      console.log("Feedback removed successfully.");
+    }
+  } catch (error) {
+    console.error("Error removing feedback:", error);
+  }
+};

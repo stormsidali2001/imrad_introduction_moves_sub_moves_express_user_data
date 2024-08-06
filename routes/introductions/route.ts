@@ -1,5 +1,8 @@
 import express, { Response, Request } from "express";
-import { IntroductionDto } from "../../validation/introduction";
+import {
+  IntroductionDto,
+  SentenceFindParamsDto,
+} from "../../validation/introduction";
 import {
   createIntroduction,
   findIntroduction,
@@ -11,6 +14,7 @@ import { IntroductionParamsDto } from "../../validation/authParamsParserDto";
 import { CreateSentenceFeedbackDto } from "../../validation/feedbackDto";
 import {
   createSentenceFeedback,
+  deleteFeedback,
   getPaginatedFeedbacks,
 } from "../../services/feedbackService";
 import { getDashboardStatsUseCase } from "../../services/use-cases/dashboard-stats";
@@ -119,5 +123,18 @@ introductionRouter.get("/feedbacks", async (req: Request, res: Response) => {
     res.status(422).json(JSON.stringify(err));
   }
 });
+
+introductionRouter.delete(
+  "/:introductionId/sentences/:sentenceId/feedbacks",
+  async (req: Request, res: Response) => {
+    try {
+      const params = await SentenceFindParamsDto.parseAsync(req.params);
+      await deleteFeedback(params.introductionId, params.sentenceId);
+      res.status(200).json([]);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+);
 
 export default introductionRouter;
