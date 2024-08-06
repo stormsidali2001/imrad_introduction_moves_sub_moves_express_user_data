@@ -137,4 +137,17 @@ introductionRouter.delete(
   },
 );
 
+introductionRouter.get(
+  "/dashboard/stats",
+
+  async (req: Request, res: Response) => {
+    try {
+      const stats = await getDashboardStatsUseCase();
+      res.status(200).json(stats);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+);
+
 export default introductionRouter;

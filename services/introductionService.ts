@@ -109,7 +109,11 @@ export const deleteIntroduction = async (id: string, userId: string) => {
 export const getAverageConfidenceScore = async (userId?: string) => {
   try {
     const averageConfidenceScore = await introductionModel.aggregate([
-      { $match: { userId } },
+      {
+        $match: {
+          ...(userId ? { userId } : {}),
+        },
+      },
       { $unwind: "$sentences" },
       {
         $group: {
@@ -120,10 +124,12 @@ export const getAverageConfidenceScore = async (userId?: string) => {
       },
     ]);
 
+    console.log("average confidence score", averageConfidenceScore);
     return {
-      avgMoveConfidence: averageConfidenceScore[0].avgMoveConfidence as number,
-      avgSubMoveConfidence: averageConfidenceScore[0]
-        .avgSubMoveConfidence as number,
+      avgMoveConfidence:
+        averageConfidenceScore?.[0]?.avgMoveConfidence ?? (0 as number),
+      avgSubMoveConfidence:
+        averageConfidenceScore?.[0]?.avgSubMoveConfidence ?? (0 as number),
     };
   } catch (err) {
     console.error(err);

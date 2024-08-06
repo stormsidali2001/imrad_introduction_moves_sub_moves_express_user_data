@@ -1,3 +1,5 @@
+import { DashboardStatsDto } from "../../validation/dashboardStatsDto";
+import { getFeedbackCount } from "../feedbackService";
 import {
   getAverageConfidenceScore,
   getTotalIntroductions,
@@ -8,16 +10,13 @@ export const getDashboardStatsUseCase = async (userId?: string) => {
     await Promise.all([
       getTotalIntroductions(userId),
       getAverageConfidenceScore(userId),
-      getTotalFeedbacks(userId),
+      getFeedbackCount(userId),
     ]);
 
-  return {
+  return DashboardStatsDto.parseAsync({
     total,
     avgMoveConfidence,
     avgSubMoveConfidence,
     totalFeedbacks,
-  };
+  });
 };
-function getTotalFeedbacks(userId: string | undefined): any {
-  throw new Error("Function not implemented.");
-}
