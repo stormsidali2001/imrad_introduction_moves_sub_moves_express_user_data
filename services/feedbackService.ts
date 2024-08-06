@@ -62,7 +62,7 @@ export async function getPaginatedFeedbacks(
         { $limit: PAGE_SIZE },
         {
           $project: {
-            _id: 0,
+            _id: 1,
             feedback: "$sentences.feedback",
             sentenceText: "$sentences.text",
             sentenceId: "$sentences._id",
@@ -76,6 +76,7 @@ export async function getPaginatedFeedbacks(
     const feedbacksData = result.map((r) => ({
       ...r,
       sentenceId: r.sentenceId.toString(),
+      introductionId: r._id.toString(),
     }));
 
     return getPaginatedResults(

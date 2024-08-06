@@ -19,6 +19,7 @@ export const SentenceFeedbackDto = z.object({
   feedback: FeedbackDto,
   sentenceText: z.string(),
   sentenceId: z.string(),
+  introductionId: z.string(),
   move: z.number().optional(),
   subMove: z.number().optional(),
 });
