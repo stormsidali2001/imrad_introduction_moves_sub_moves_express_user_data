@@ -18,6 +18,7 @@ import {
   getPaginatedFeedbacks,
 } from "../../services/feedbackService";
 import { getDashboardStatsUseCase } from "../../services/use-cases/dashboard-stats";
+import { z } from "zod";
 
 const introductionRouter = express.Router();
 
@@ -42,25 +43,22 @@ introductionRouter.post(
   },
 );
 
-introductionRouter.get(
-  "/users/:userId",
-  async (req: Request, res: Response) => {
-    try {
-      console.log(req.params, req.query);
+introductionRouter.get("", async (req: Request, res: Response) => {
+  try {
+    console.log(req.params, req.query);
 
-      const { page, search, userId } = await RetrieverParamsDto.parseAsync({
-        ...req.params,
-        ...req.query,
-      });
+    const { page, search, userId } = await RetrieverParamsDto.parseAsync({
+      ...req.params,
+      ...req.query,
+    });
 
-      const introductions = await findIntroductions(userId, page, search);
-      res.status(200).json(introductions);
-    } catch (err) {
-      console.error(JSON.stringify(err));
-      res.status(422).json(err);
-    }
-  },
-);
+    const introductions = await findIntroductions(userId, page, search);
+    res.status(200).json(introductions);
+  } catch (err) {
+    console.error(JSON.stringify(err));
+    res.status(422).json(err);
+  }
+});
 
 introductionRouter.post("/", async (req: Request, res: Response) => {
   console.log("body", req.body);
@@ -71,13 +69,11 @@ introductionRouter.post("/", async (req: Request, res: Response) => {
   res.status(201).json([]);
 });
 
-introductionRouter.get(
-  "/stats/users/:userId",
-  async (req: Request, res: Response) => {
-    const stats = await getIntroductionsStats(req.params.userId);
-    res.status(200).json(stats);
-  },
-);
+introductionRouter.get("/stats", async (req: Request, res: Response) => {
+  const userId = await z.string().optional().parseAsync(req.query.userId);
+  const stats = await getIntroductionsStats(userId);
+  res.status(200).json(stats);
+});
 
 introductionRouter.get(
   "/admin/stats/users/:userId",

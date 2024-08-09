@@ -14,17 +14,22 @@ export const getPaginatedResults = async <T extends AnyZodObject>(
     data,
     ...others
   }: {
-    data: z.infer<T>[];
+    data: Object[];
     page: number;
     per_page: number;
     total: number;
     total_pages: number;
   },
   validator: T,
-) => {
+): Promise<{
+  data: z.infer<T>[];
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+}> => {
   return PaginatedResultDtoMaker(validator).parseAsync({
-    data,
+    data: data as z.infer<T>[],
     ...others,
   });
 };
-

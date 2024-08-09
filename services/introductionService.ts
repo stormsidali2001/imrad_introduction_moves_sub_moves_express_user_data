@@ -136,7 +136,7 @@ export const getAverageConfidenceScore = async (userId?: string) => {
     throw err;
   }
 };
-export const getIntroductionsStats = async (userId: string) => {
+export const getIntroductionsStats = async (userId?: string) => {
   /**
    * Returns the following statistics for a given user @param userId
    * Total number of introductions.
@@ -156,7 +156,11 @@ export const getIntroductionsStats = async (userId: string) => {
 
     // Total number of introductions grouped by moves
     const totalIntroductionsByMove = await introductionModel.aggregate([
-      { $match: { userId } },
+      {
+        $match: {
+          ...(userId ? { userId } : {}),
+        },
+      },
       { $unwind: "$sentences" },
       { $group: { _id: "$sentences.move", count: { $sum: 1 } } },
     ]);
@@ -169,7 +173,11 @@ export const getIntroductionsStats = async (userId: string) => {
     console.log(`Total introductions by move${totalIntroductionsByMove}`);
     // Average Confidence score grouped by moves
     const averageConfidenceScoreByMove = await introductionModel.aggregate([
-      { $match: { userId } },
+      {
+        $match: {
+          ...(userId ? { userId } : {}),
+        },
+      },
       { $unwind: "$sentences" },
       {
         $group: {
@@ -182,7 +190,11 @@ export const getIntroductionsStats = async (userId: string) => {
 
     // Average Sentence position score
     const averageSentencePositionScore = await introductionModel.aggregate([
-      { $match: { userId } },
+      {
+        $match: {
+          ...(userId ? { userId } : {}),
+        },
+      },
       { $unwind: "$sentences" },
       { $group: { _id: null, avgOrder: { $avg: "$sentences.order" } } },
     ]);
@@ -190,7 +202,11 @@ export const getIntroductionsStats = async (userId: string) => {
     // Average Sentence position score grouped by moves
     const averageSentencePositionScoreByMove =
       await introductionModel.aggregate([
-        { $match: { userId } },
+        {
+          $match: {
+            ...(userId ? { userId } : {}),
+          },
+        },
         { $unwind: "$sentences" },
         {
           $group: {
@@ -219,7 +235,9 @@ export const getIntroductionsStats = async (userId: string) => {
         }),
       ),
 
-      averageSentencePositionScore: averageSentencePositionScore[0],
+      averageSentencePositionScore: {
+        avgOrder: averageSentencePositionScore[0]?.avgOrder ?? 0,
+      },
       averageSentencePositionScoreByMove:
         averageSentencePositionScoreByMove.map((item) => ({
           move: item._id,
