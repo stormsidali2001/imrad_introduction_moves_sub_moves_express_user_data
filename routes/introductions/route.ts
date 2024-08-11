@@ -88,23 +88,23 @@ introductionRouter.get(
   },
 );
 
-introductionRouter.get(
-  "/:id/users/:userId",
-  async (req: Request, res: Response) => {
-    try {
-      const { userId, id } = await IntroductionParamsDto.parseAsync(req.params);
+introductionRouter.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { userId, id } = await IntroductionParamsDto.parseAsync({
+      ...req.query,
+      ...req.params,
+    });
 
-      const introduction = await findIntroduction(id, userId);
+    const introduction = await findIntroduction(id, userId);
 
-      if (!introduction) {
-        res.status(404).json({ message: "Introduction not found" });
-      }
-      res.status(200).json(introduction);
-    } catch (err) {
-      console.error(err);
+    if (!introduction) {
+      res.status(404).json({ message: "Introduction not found" });
     }
-  },
-);
+    res.status(200).json(introduction);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 introductionRouter.get("/feedbacks", async (req: Request, res: Response) => {
   try {
