@@ -3,6 +3,7 @@ import introductionModel, {
   IntroductionDocument,
   IntroductionSchema,
 } from "../models/introductions";
+import { GlobalSummaryEventDtoType } from "../validation/GlobalSummaryEventDto";
 import {
   IntroductionDto,
   IntroductionDtoType,
@@ -16,7 +17,7 @@ Perfectly i would be working with repositories and i will setup a dependency inj
 */
 
 export const createIntroduction = async (introduction: IntroductionDtoType) => {
-  const res = await introductionModel.create({
+  const introductionDb = await introductionModel.create({
     ...introduction,
     averageMoveConfidence:
       introduction.sentences.reduce(
@@ -29,15 +30,16 @@ export const createIntroduction = async (introduction: IntroductionDtoType) => {
         0,
       ) / introduction.sentences.length,
   });
+  return IntroductionDto.parseAsync(introductionDb);
 };
 
 export const findIntroduction = async (
   id: string,
-  userId: string,
+  userId?: string | null,
 ): Promise<IntroductionDtoType> => {
   const introduction = await introductionModel.findOne({
     _id: id,
-    userId,
+    ...(userId ? { userId } : {}),
   });
   if (!introduction) {
     throw new Error("Introduction not found");
@@ -248,4 +250,19 @@ export const getIntroductionsStats = async (userId?: string) => {
     console.error("Error fetching statistics:", error);
     throw new Error("Could not fetch statistics.");
   }
+};
+
+export const createSummary = async ({
+  content,
+  introductionId,
+}: GlobalSummaryEventDtoType) => {
+  const introduction = await introductionModel.findById(introductionId);
+  if (!introduction) {
+    throw new Error("Introduction Not found");
+  }
+  if (introduction.summary) {
+    throw new Error("Summary Already created");
+  }
+  introduction.summary = content;
+  await introduction.save();
 };

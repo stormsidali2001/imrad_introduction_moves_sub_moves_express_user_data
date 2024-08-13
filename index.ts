@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { env } from "./envZod";
 import { eurekaClient } from "./eureka-client";
 import bodyParser from "body-parser";
+import { initIntroductionSummarySubscriberUseCase } from "./services/use-cases/init-introduction-summary-subscriber";
 
 eurekaClient.start();
 mongoose
@@ -15,6 +16,7 @@ mongoose
     console.error("Error connecting to MongoDB:", err);
   });
 
+initIntroductionSummarySubscriberUseCase();
 const app = express();
 
 app.use(bodyParser({ limit: "50mb" }));
@@ -38,4 +40,3 @@ app.use("/introductions", introductionRouter);
 app.listen(env.PORT, () => {
   console.log(`Server is running on port ${env.PORT}`);
 });
-

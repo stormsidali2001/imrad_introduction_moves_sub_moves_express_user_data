@@ -45,6 +45,8 @@ export const IntroductionSchema = new mongoose.Schema({
     type: [SentenceSchema],
     required: true,
   },
+
+  // these  fields aggregated values fields calculated at the introduction creation time using  sentences array values
   averageSubMoveConfidence: {
     type: Number,
     required: true,
@@ -52,6 +54,16 @@ export const IntroductionSchema = new mongoose.Schema({
   averageMoveConfidence: {
     type: Number,
     required: true,
+  },
+  //
+  //
+  summary: {
+    type: String,
+    required: false,
+  },
+  classBasedSummary: {
+    type: String,
+    required: false,
   },
 });
 

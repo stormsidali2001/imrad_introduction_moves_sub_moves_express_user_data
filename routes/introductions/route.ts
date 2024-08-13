@@ -19,6 +19,7 @@ import {
 } from "../../services/feedbackService";
 import { getDashboardStatsUseCase } from "../../services/use-cases/dashboard-stats";
 import { z } from "zod";
+import { createIntroductionUseCase } from "../../services/use-cases/create-introduction";
 
 const introductionRouter = express.Router();
 
@@ -61,12 +62,23 @@ introductionRouter.get("", async (req: Request, res: Response) => {
 });
 
 introductionRouter.post("/", async (req: Request, res: Response) => {
-  console.log("body", req.body);
   const introduction = await IntroductionDto.parseAsync(req.body);
+  const isPremium = await z
+    .boolean()
+    .default(false)
+    .parseAsync(req.body.isPremium);
   console.log(introduction);
-  await createIntroduction(introduction);
+  try {
+    const introductionDb = await createIntroductionUseCase(
+      introduction,
+      isPremium,
+    );
 
-  res.status(201).json([]);
+    res.status(201).json(introductionDb);
+  } catch (err) {
+    console.error(err);
+    res.status(422).json({ error: err });
+  }
 });
 
 introductionRouter.get("/stats", async (req: Request, res: Response) => {
