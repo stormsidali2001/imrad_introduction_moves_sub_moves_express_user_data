@@ -5,6 +5,7 @@ import { env } from "./envZod";
 import { eurekaClient } from "./eureka-client";
 import bodyParser from "body-parser";
 import { initIntroductionSummarySubscriberUseCase } from "./services/use-cases/init-introduction-summary-subscriber";
+import { initIntroductionClassBasedSummarySubscriberUseCase } from "./services/use-cases/init-introduction-class-based-summary-subscriber";
 
 eurekaClient.start();
 mongoose
@@ -17,6 +18,7 @@ mongoose
   });
 
 initIntroductionSummarySubscriberUseCase();
+initIntroductionClassBasedSummarySubscriberUseCase();
 const app = express();
 
 app.use(bodyParser({ limit: "50mb" }));

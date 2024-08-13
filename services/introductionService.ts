@@ -266,3 +266,17 @@ export const createSummary = async ({
   introduction.summary = content;
   await introduction.save();
 };
+export const createClassBasedSummary = async ({
+  content,
+  introductionId,
+}: GlobalSummaryEventDtoType) => {
+  const introduction = await introductionModel.findById(introductionId);
+  if (!introduction) {
+    throw new Error("Introduction Not found");
+  }
+  if (introduction.classBasedSummary) {
+    throw new Error("Summary Already created");
+  }
+  introduction.classBasedSummary = content;
+  await introduction.save();
+};
