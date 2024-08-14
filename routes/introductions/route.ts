@@ -62,13 +62,13 @@ introductionRouter.get("", async (req: Request, res: Response) => {
 });
 
 introductionRouter.post("/", async (req: Request, res: Response) => {
-  const introduction = await IntroductionDto.parseAsync(req.body);
-  const isPremium = await z
-    .boolean()
-    .default(false)
-    .parseAsync(req.body.isPremium);
-  console.log(introduction);
   try {
+    const introduction = await IntroductionDto.parseAsync(req.body);
+    const isPremium = await z
+      .boolean()
+      .default(false)
+      .parseAsync(req.body.isPremium);
+    console.log(introduction);
     const introductionDb = await createIntroductionUseCase(
       introduction,
       isPremium,
@@ -82,9 +82,14 @@ introductionRouter.post("/", async (req: Request, res: Response) => {
 });
 
 introductionRouter.get("/stats", async (req: Request, res: Response) => {
-  const userId = await z.string().optional().parseAsync(req.query.userId);
-  const stats = await getIntroductionsStats(userId);
-  res.status(200).json(stats);
+  try {
+    const userId = await z.string().optional().parseAsync(req.query.userId);
+    const stats = await getIntroductionsStats(userId);
+    res.status(200).json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(422).json(err);
+  }
 });
 
 introductionRouter.get(
@@ -99,6 +104,19 @@ introductionRouter.get(
     }
   },
 );
+introductionRouter.get("/feedbacks", async (req: Request, res: Response) => {
+  try {
+    const params = await RetrieverParamsDto.parseAsync(req.query);
+    const feedbacks = await getPaginatedFeedbacks(
+      params.userId,
+      params.page,
+      params.search,
+    );
+    res.status(200).json(feedbacks);
+  } catch (err) {
+    res.status(422).json(JSON.stringify(err));
+  }
+});
 
 introductionRouter.get("/:id", async (req: Request, res: Response) => {
   try {
@@ -115,20 +133,6 @@ introductionRouter.get("/:id", async (req: Request, res: Response) => {
     res.status(200).json(introduction);
   } catch (err) {
     console.error(err);
-  }
-});
-
-introductionRouter.get("/feedbacks", async (req: Request, res: Response) => {
-  try {
-    const params = await RetrieverParamsDto.parseAsync(req.query);
-    const feedbacks = await getPaginatedFeedbacks(
-      params.userId,
-      params.page,
-      params.search,
-    );
-    res.status(200).json(feedbacks);
-  } catch (err) {
-    res.status(422).json(JSON.stringify(err));
   }
 });
 

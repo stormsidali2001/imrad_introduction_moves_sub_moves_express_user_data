@@ -42,9 +42,23 @@ export async function getPaginatedFeedbacks(
 ) {
   try {
     // First, get the total count of feedbacks that match the criteria
+
     const total = await getFeedbackCount(userId, search);
+    if (total === 0)
+      return getPaginatedResults(
+        {
+          data: [],
+          page,
+          per_page: PAGE_SIZE,
+          total,
+          total_pages: Math.ceil(total / PAGE_SIZE),
+        },
+        SentenceFeedbackDto,
+      );
 
     // Get the paginated results
+
+    console.log("query to get the feedbacks");
     const result = await introductionModel
       .aggregate([
         { $unwind: "$sentences" },
@@ -55,6 +69,10 @@ export async function getPaginatedFeedbacks(
             ...(search && {
               "sentences.text": { $regex: search, $options: "i" },
             }),
+            // filter introduction with undefined feedback
+            "sentences.feedback": {
+              $exists: true,
+            },
           },
         },
         { $sort: { "sentences.feedback._id": -1 } },
@@ -73,6 +91,7 @@ export async function getPaginatedFeedbacks(
       ])
       .exec();
 
+    console.log("feedback raw results :", result);
     const feedbacksData = result.map((r) => ({
       ...r,
       sentenceId: r.sentenceId.toString(),
