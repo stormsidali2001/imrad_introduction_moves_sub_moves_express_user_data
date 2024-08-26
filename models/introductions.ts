@@ -17,6 +17,10 @@ export const FeedbackSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  createdAt: {
+    type: Date,
+    required: true,
+  },
 });
 const SentenceSchema = new mongoose.Schema({
   move: { type: Number, required: true },

@@ -32,6 +32,7 @@ export const createSentenceFeedback = async ({
     correctSubMove: feedback.correctSubMove,
     username: feedback.username,
     image: feedback.image,
+    createdAt: new Date(),
   };
   await introduction.save();
 };
@@ -75,7 +76,7 @@ export async function getPaginatedFeedbacks(
             },
           },
         },
-        { $sort: { "sentences.feedback._id": -1 } },
+        { $sort: { "sentences.feedback.createdAt": -1 } },
         { $skip: (page - 1) * PAGE_SIZE },
         { $limit: PAGE_SIZE },
         {

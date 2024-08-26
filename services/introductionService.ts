@@ -79,8 +79,8 @@ export const findIntroductions = async (
 
   console.log(JSON.stringify(introductions));
   const total = await introductionModel.countDocuments({
-    userId,
     ...(search ? { "sentences.text": { $regex: search, $options: "i" } } : {}),
+    ...(userId ? { userId } : {}),
   });
 
   return getPaginatedResults(
