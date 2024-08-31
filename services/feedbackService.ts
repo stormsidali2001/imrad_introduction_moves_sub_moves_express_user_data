@@ -162,3 +162,41 @@ export const deleteFeedback = async (
     console.error("Error removing feedback:", error);
   }
 };
+
+export const getAllFeedbacks = async () => {
+  const result = await introductionModel
+    .aggregate([
+      { $unwind: "$sentences" },
+      { $unwind: "$sentences.feedback" },
+      {
+        $match: {
+          // filter introduction with undefined feedback
+          "sentences.feedback": {
+            $exists: true,
+          },
+        },
+      },
+      { $sort: { "sentences.feedback.createdAt": -1 } },
+      {
+        $project: {
+          _id: 1,
+          feedback: "$sentences.feedback",
+          sentenceText: "$sentences.text",
+          sentenceId: "$sentences._id",
+          move: "$sentences.move",
+          subMove: "$sentences.subMove",
+        },
+      },
+    ])
+    .exec();
+
+  console.log("feedback raw results :", result);
+  const feedbackData = result.map((r) =>
+    SentenceFeedbackDto.parse({
+      ...r,
+      sentenceId: r.sentenceId.toString(),
+      introductionId: r._id.toString(),
+    }),
+  );
+  return feedbackData;
+};

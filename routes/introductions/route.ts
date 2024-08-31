@@ -15,6 +15,7 @@ import { CreateSentenceFeedbackDto } from "../../validation/feedbackDto";
 import {
   createSentenceFeedback,
   deleteFeedback,
+  getAllFeedbacks,
   getPaginatedFeedbacks,
 } from "../../services/feedbackService";
 import { getDashboardStatsUseCase } from "../../services/use-cases/dashboard-stats";
@@ -101,6 +102,19 @@ introductionRouter.get(
     } catch (err) {
       console.error(err);
       throw err;
+    }
+  },
+);
+
+introductionRouter.get(
+  "/feedbacks/all",
+  async (req: Request, res: Response) => {
+    try {
+      const feedbacks = await getAllFeedbacks();
+      res.status(200).json(feedbacks);
+    } catch (err) {
+      console.error(err);
+      res.status(422).json(JSON.stringify(err));
     }
   },
 );
