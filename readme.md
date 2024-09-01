@@ -33,12 +33,6 @@ The data is structured using MongoDB documents and includes the following key co
 * **Feedback:**
     * Stores user feedback on individual sentences, including whether the user agreed with the prediction ("liked"), the reason for feedback, and any corrections they provided. 
 
-## API Endpoints 
-
-[Provide a brief description of the main API endpoints offered by this microservice. Include:
-* HTTP methods (GET, POST, etc.)
-* URL paths
-* A short description of what each endpoint does] 
 
 ## Communication
 
@@ -50,13 +44,9 @@ The AI models that generate the data stored in this microservice are trained on 
 
 [https://github.com/stormsidali2001/graduation_IMRAD_introduction_analysis_SaaS](https://github.com/stormsidali2001/graduation_IMRAD_introduction_analysis_SaaS)
 
-## Running the Microservice
+## Running the Microservices
 
-[Provide instructions on how to set up and run the User Data Microservice locally. Include information about:
-* Prerequisites (Node.js, MongoDB, Redis)
-* Installation steps
-* Configuration (environment variables, connecting to databases)
-* Starting the server] 
+later.
 
 ## License
 
