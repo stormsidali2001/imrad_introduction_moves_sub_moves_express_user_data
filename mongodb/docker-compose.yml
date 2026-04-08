@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongo:
@@ -15,7 +15,7 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
     ports:
-      - "5000:8081"
+      - "5311:8081"
     depends_on:
       - mongo
 

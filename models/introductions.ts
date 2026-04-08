@@ -44,6 +44,10 @@ export const IntroductionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    required: true,
+  },
   // an array of objects  { sentence: string, order:number ,move:number , subMove: number  }
   sentences: {
     type: [SentenceSchema],

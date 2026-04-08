@@ -19,6 +19,7 @@ Perfectly i would be working with repositories and i will setup a dependency inj
 export const createIntroduction = async (introduction: IntroductionDtoType) => {
   const introductionDb = await introductionModel.create({
     ...introduction,
+    createdAt: new Date(),
     averageMoveConfidence:
       introduction.sentences.reduce(
         (acc, sentence) => acc + sentence.moveConfidence,
@@ -75,7 +76,7 @@ export const findIntroductions = async (
     )
     .skip((page - 1) * PAGE_SIZE)
     .limit(PAGE_SIZE)
-    .sort({ order: 1 });
+    .sort({ createdAt: -1 });
 
   console.log(JSON.stringify(introductions));
   const total = await introductionModel.countDocuments({
