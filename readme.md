@@ -1,3 +1,10 @@
+> **ARCHIVED** — This repository has been superseded by the unified Turborepo monorepo.
+> All code (user-data API, moves classifier, pdf-extractor, Eureka service, and Next.js frontend)
+> now lives in one place:
+> **[stormsidali2001/graduation_IMRAD_introduction_analysis_SaaS](https://github.com/stormsidali2001/graduation_IMRAD_introduction_analysis_SaaS)**
+>
+> This repo is kept for reference. No further development will happen here.
+
 # IMRaD Introduction Analysis - User Data Microservice
 
 This repository contains the User Data Microservice for the IMRaD Introduction Analysis platform, a Micro SaaS application developed for my graduation thesis.
